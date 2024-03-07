@@ -32,5 +32,5 @@ This is my first C++ console game (I have no idea how Github's readme formatting
   -- Market crash
 
   -- Tornado
-
-
+  
+  soon to add colors!!
