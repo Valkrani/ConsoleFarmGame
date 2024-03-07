@@ -1,8 +1,10 @@
 #include "WorldSystem.h"
+#include "EnumTypes.h"
+
 #include <iostream>
 #include <fstream>
 #include <random> // used for random()
-#include "EnumTypes.h"
+#include <cstdlib>  // for system("CLS")
 
 
 // Given a range, it returns a random integer
@@ -52,7 +54,7 @@ void WorldSystem::ProccessDay(RenderingEngine* renderEngine, Farmer* player, Pri
 
     while (true)
     {
-        cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
+        system("CLS");
         renderEngine->DisplayDailyOptions(days, player);
 
         int input;
@@ -144,7 +146,7 @@ void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Pric
     }
 
 
-    cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
+    system("CLS");
     renderEngine->SellProductScreen(player, todaysPrices);
 
     while (true)
@@ -222,7 +224,7 @@ void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player
         }
     }
 
-    cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
+    system("CLS");
     renderEngine->BuyAnimalsScreen(player, todaysPrices);
     while (true)
     {
@@ -287,9 +289,8 @@ void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player
 
 void WorldSystem::GenerateRandomEvent(Farmer* player, Prices* todaysPrices)
 {
-    cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
+    system("CLS");
     cout << "A random event has occured!!!" << '\n';
-
 
     RandomEvents randomEvent = static_cast<RandomEvents>(random(0, 8));
 
