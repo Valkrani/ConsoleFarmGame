@@ -9,9 +9,9 @@ This is my first C++ console game (I have no idea how Github's readme formatting
   
   ### -The market changes on a daily and weekly basis. 
   
-  ### ---The market prices vary daily around a base price, with a bit of a random number with inflation (for the funs).
+  --The market prices vary daily around a base price, with a bit of a random number with inflation (for the funs).
    
-  ### ---The market base prices vary weekly on a random number with inflation (for the funs)
+  --The market base prices vary weekly on a random number with inflation (for the funs)
 
   ### -Simple Save/Load system. Literally just outputs the data to a file and reads from them
   
