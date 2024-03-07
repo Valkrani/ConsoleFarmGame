@@ -37,8 +37,10 @@ int main()
         worldSystem->FinishDay(renderEngine, player, todaysPrices);
     }
 
-    // TODO
-    // save system
+    // future idea:
+    // colors to the console text
+    // https://www.daniweb.com/programming/software-development/code/216345/add-a-little-color-to-your-console-text
+
 
     delete worldSystem;
     delete todaysPrices;

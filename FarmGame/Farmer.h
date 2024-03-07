@@ -57,4 +57,11 @@ public:
 
 	void PrintFarmInfo() const;
 
+	void RandomEventStealMoney(double amountToTake);
+	void RandomEventWolfAttack(double percentToTake);
+	void RandomEventPlague(double percentToTake);
+	void RandomEventNPCrequest(Product request, int amount, double requestPriceDiff, Prices* todaysPrices);
+	void RandomEventAnimalCapture(AnimalTypes animalType, double chancePercent);
+	void RandomEventTornado(double damagePricePercentage, double percentMissingAnimals);
+
 };

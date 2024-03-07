@@ -12,7 +12,7 @@ RenderingEngine::RenderingEngine() {}
 
 void RenderingEngine::StartupScreen(bool& outLoadingSave) const
 {
-	system("CLS");
+	cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
 	cout << "*------------------------------------*" << '\n';
 	cout << "|                                    |" << '\n';
 	cout << "|      * Welcome to FarmGame *       |" << '\n';    // WIP title (hopefully)
@@ -32,7 +32,7 @@ void RenderingEngine::StartupScreen(bool& outLoadingSave) const
 		{
 			cout << "Starting new game..." << '\n';
 			Sleep(2000);
-			system("CLS");
+			cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
 			outLoadingSave = false;
 			return;
 		}
@@ -40,7 +40,7 @@ void RenderingEngine::StartupScreen(bool& outLoadingSave) const
 		{
 			cout << "Loading game..." << '\n';
 			Sleep(2000);
-			system("CLS");
+			cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
 			outLoadingSave = true;
 			return;
 		}
@@ -75,7 +75,7 @@ void RenderingEngine::FailedSellMessage(string sellType, int amount, int product
 
 void RenderingEngine::DisplayDailyOptions(int currentDay, Farmer* player) const
 {
-	system("CLS");
+	cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
 	cout << "Today is day: " << currentDay << "." << '\n';
 	cout << "Current farm stats:" << '\n';
 	player->PrintFarmInfo();
@@ -89,7 +89,7 @@ void RenderingEngine::DisplayDailyOptions(int currentDay, Farmer* player) const
 
 void RenderingEngine::SellProductScreen(Farmer* player, Prices* todaysPrices) const
 {
-	system("CLS");
+	cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
 	cout << "Today's prices are: " << '\n';
 	cout << "Eggs: " << todaysPrices->GetEggsPrice() << '\n';
 	cout << "Milk per liter: " << todaysPrices->GetMilkPrice() << '\n';
@@ -108,7 +108,7 @@ void RenderingEngine::SellProductScreen(Farmer* player, Prices* todaysPrices) co
 }
 void RenderingEngine::BuyAnimalsScreen(Farmer* player, Prices* todaysPrices) const
 {
-	system("CLS");
+	cout << "\033[2J\033[1;1H";
 	cout << "Your moneys: " << player->GetMoneyAmount() << "." << '\n';
 	cout << "What would you like to buy:" << '\n';
 	cout << "1. Chicken: " << todaysPrices->GetChickenPrice() << " per chicken." << '\n';
@@ -120,10 +120,10 @@ void RenderingEngine::BuyAnimalsScreen(Farmer* player, Prices* todaysPrices) con
 
 void RenderingEngine::DayEndScreen() const
 {
-	system("CLS");
+	cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
 	for (int i = 0; i < 2; i++)
 	{
-		system("CLS");
+		cout << "\033[2J\033[1;1H"; // clears screen and sets cursor to 1,1
 		cout << "Sleeping";
 		for (int i = 0; i < 3; i++)
 		{
@@ -131,4 +131,5 @@ void RenderingEngine::DayEndScreen() const
 			Sleep(1000);
 		}
 	}
+	cout << '\n';
 }

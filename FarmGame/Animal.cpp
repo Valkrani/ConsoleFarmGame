@@ -36,6 +36,12 @@ void Animal::AddAnimal(int amountToAdd)
 	this->animalCount += amountToAdd;
 }
 
+void Animal::RemoveAnimal(int amountToTake)
+{
+	this->animalCount -= amountToTake;
+}
+
+
 void Animal::RemoveProducts(int amountToRemove)
 {
 	if (this->productAmount < amountToRemove)

@@ -1,5 +1,5 @@
 #include "Prices.h"
-#include <random>
+#include <random> // used for random()
 #include <fstream>
 
 // Taken from stackoverflow
@@ -116,4 +116,34 @@ void Prices::WeeklyPriceChange()
 	this->baseCowPrice		 = NegativeProtection((this->baseCowPrice	    + random(-2.00, 2.00)) * inflationRate);
 	this->baseSheepPrice	 = NegativeProtection((this->baseSheepPrice	    + random(-2.00, 2.00)) * inflationRate);
 	this->baseCrocodilePrice = NegativeProtection((this->baseCrocodilePrice + random(-2.00, 2.00)) * inflationRate);
+}
+
+void Prices::RandomEventHyperinflation()
+{
+	this->inflationRate  *= 10;
+						   	  
+	this->eggsPrice      *= 10;
+	this->milkLiterPrice *= 10;
+	this->woolPrice      *= 10;
+	this->crocSkinPrice  *= 10;
+							  
+	this->chickenPrice   *= 10;
+	this->cowPrice       *= 10;
+	this->sheepPrice     *=	10;
+	this->crocodilePrice *= 10;
+}
+
+void Prices::RandomEventMarketCrash()
+{
+	this->inflationRate   = 0;
+
+	this->eggsPrice       = 0;
+	this->milkLiterPrice  = 0;
+	this->woolPrice       = 0;
+	this->crocSkinPrice   = 0;
+
+	this->chickenPrice    = 0;
+	this->cowPrice        = 0;
+	this->sheepPrice      = 0;
+	this->crocodilePrice  = 0;
 }

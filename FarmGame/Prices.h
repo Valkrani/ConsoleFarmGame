@@ -67,4 +67,7 @@ public:
 	double GetCowPrice() const { return cowPrice; }
 	double GetSheepPrice() const { return sheepPrice; }
 	double GetCrocodilePrice() const { return crocodilePrice; }
+
+	void RandomEventHyperinflation();
+	void RandomEventMarketCrash();
 };

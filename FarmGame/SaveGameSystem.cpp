@@ -42,6 +42,6 @@ void SaveGameSystem::LoadGame(Farmer* farmer, WorldSystem* worldSystem, Prices* 
 	}
 	else
 	{
-		cout << "Save failed." << '\n';
+		cout << "Load failed." << '\n';
 	}
 }

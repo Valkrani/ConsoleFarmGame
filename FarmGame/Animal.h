@@ -35,6 +35,8 @@ public:
 	void FinishDay(int day);
 
 	void AddAnimal(int amountToAdd);
+	void RemoveAnimal(int amountToTake);
+
 	void RemoveProducts(int amountToRemove);
 
 };
