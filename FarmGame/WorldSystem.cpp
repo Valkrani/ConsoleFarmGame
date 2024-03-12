@@ -84,7 +84,6 @@ void WorldSystem::ProccessDay(RenderingEngine* renderEngine, Farmer* player, Pri
         else
         {
             cout << "Wrong command. Try again." << '\n';
-            break;
         }
     }
 }
