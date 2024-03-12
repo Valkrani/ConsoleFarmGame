@@ -57,11 +57,11 @@ string Animal::GetAnimalTypeToString() const
 	switch (this->animalType)
 	{
 	case AnimalTypes::Chicken:
-		return "Chicken(s)";
+		return "Chickens";
 		break;
 
 	case AnimalTypes::Cow:
-		return "Cow(s)";
+		return "Cows";
 		break;
 
 	case AnimalTypes::Sheep:
@@ -70,7 +70,7 @@ string Animal::GetAnimalTypeToString() const
 		break;
 
 	case AnimalTypes::Crocodile:
-		return "Crocodile(s)";
+		return "Crocodiles";
 		break;
 	default:
 		break;
@@ -84,11 +84,11 @@ std::string Animal::GetProductTypeToString() const
 	switch (this->animalType)
 	{
 	case AnimalTypes::Chicken:
-		return "Egg(s)";
+		return "Eggs";
 		break;
 
 	case AnimalTypes::Cow:
-		return "Milk Liter(s)";
+		return "Milk Liters";
 		break;
 
 	case AnimalTypes::Sheep:
@@ -96,7 +96,7 @@ std::string Animal::GetProductTypeToString() const
 		break;
 
 	case AnimalTypes::Crocodile:
-		return "Crocodile Skin(s)";
+		return "Crocodile Skin";
 		break;
 
 	default:

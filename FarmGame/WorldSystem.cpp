@@ -1,7 +1,9 @@
 #include "WorldSystem.h"
 #include "EnumTypes.h"
+#include "StringToLower.h"
 
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <random> // used for random()
 #include <cstdlib>  // for system("CLS")
@@ -15,7 +17,7 @@ int random(int range_from, int range_to) {
     return distr(generator);
 }
 
-// Given a range, it returns a random double
+// Overload given a range, it returns a random double
 double random(double range_from, double range_to) {
     std::random_device                  rand_dev;
     std::mt19937                        generator(rand_dev());
@@ -29,7 +31,7 @@ using namespace std;
 WorldSystem::WorldSystem() 
 {
     days = 1;
-    basechanceForRandomEvent = 1.0; // a base of 10%
+    basechanceForRandomEvent = 0.1; // a base of 10%
     chanceForRandomEvent = basechanceForRandomEvent;
     bIsMarketCrash = false;
 }
@@ -42,7 +44,7 @@ void WorldSystem::ProccessDay(RenderingEngine* renderEngine, Farmer* player, Pri
         todaysPrices->DailyPriceChange();
         if (random(0.0, 1.0) <= chanceForRandomEvent)
         {
-            GenerateRandomEvent(player, todaysPrices);
+            GenerateRandomEvent(renderEngine, player, todaysPrices);
             chanceForRandomEvent = basechanceForRandomEvent;
         }
         else
@@ -54,36 +56,33 @@ void WorldSystem::ProccessDay(RenderingEngine* renderEngine, Farmer* player, Pri
 
     while (true)
     {
-        system("CLS");
+        renderEngine->ClearConsole();
         renderEngine->DisplayDailyOptions(days, player);
 
-        int input;
-        cin >> input;
+        string input;
+        getline(cin, input);
 
-        switch (input)
+        StringToLower(input);
+
+        if (input == "1" || input == "sell products")
         {
-        // Sell Products
-        case 1:
             this->SellScreen(renderEngine, player, todaysPrices);
-            break;
-
-        // Buy Animals
-        case 2:
+        }
+        else if (input == "2" || input == "buy animals")
+        {
             this->PurchaseScreen(renderEngine, player, todaysPrices);
-            break;
-
-        // Sleep
-        case 3:
+        }
+        else if (input == "3" || input == "sleep")
+        {
             return;
-            break;
-
-        // Save and Quit
-        case 4:
+        }
+        else if (input == "4" || input == "save and quit" || input == "quit")
+        {
             isUserQuiting = true;
             return;
-            break;
-
-        default:
+        }
+        else
+        {
             cout << "Wrong command. Try again." << '\n';
             break;
         }
@@ -146,30 +145,33 @@ void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Pric
     }
 
 
-    system("CLS");
+    renderEngine->ClearConsole();
     renderEngine->SellProductScreen(player, todaysPrices);
 
     while (true)
     {
-        int input;
+        string input;
         int amount;
-        cin >> input;
+        getline(cin, input);
+        StringToLower(input);
 
-        // for when the user enters something other than int
-        if (cin.fail()) {
-            cin.clear(); // Clear the fail state
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
-            cout << "Invalid Input" << '\n';
-            continue; // Restart the loop
-        }
-
-
-        if (input >= 1 && input <= 4)
+        if (input == "1" || input == "2" || input == "3" || input == "4"
+            || (input == "eggs") || input == "milk liters" || input == "wool" || input == "crocodile skins")
         {
             while (true)
             {
                 cout << "And how many?" << '\n';
                 cin >> amount;
+                cin.ignore();
+
+                // for when the user enters something other than int
+                if (cin.fail()) {
+                    cin.clear(); // Clear the fail state
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
+                    cout << "Invalid Input" << '\n';
+                    continue;
+                }
+
                 if (amount <= 0)
                 {
                     cout << "Invalid amount: " << amount << '\n';
@@ -179,26 +181,29 @@ void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Pric
             }
         }
 
-        switch (input)
+        if (input == "1" || input == "eggs")
         {
-        case 1:
             player->SellProduct(Product::Eggs, amount, renderEngine, todaysPrices);
-            break;
-        case 2:
+        }
+        else if (input == "2" || input == "milk liters")
+        {
             player->SellProduct(Product::Milk, amount, renderEngine, todaysPrices);
-            break;
-        case 3:
+        }
+        else if (input == "3" || input == "wool")
+        {
             player->SellProduct(Product::Wool, amount, renderEngine, todaysPrices);
-            break;
-        case 4:
+        }
+        else if (input == "4" || input == "crocodile skins")
+        {
             player->SellProduct(Product::CrocSkin, amount, renderEngine, todaysPrices);
-            break;
-        case 5:
+        }
+        else if (input == "5" || input == "return")
+        {
             return;
-            break;
-        default:
+        }
+        else
+        {
             cout << "Invalid Input" << '\n';
-            break;
         }
     }
 }
@@ -224,28 +229,32 @@ void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player
         }
     }
 
-    system("CLS");
+    renderEngine->ClearConsole();
     renderEngine->BuyAnimalsScreen(player, todaysPrices);
     while (true)
     {
-        int input;
+        string input;
         int amount;
-        cin >> input;
+        getline(cin, input);
+        StringToLower(input);
 
-        // for when the user enters something other than int
-        if (cin.fail()) {
-            cin.clear(); // Clear the fail state
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
-            cout << "Invalid Input" << '\n';
-            continue;
-        }
-
-        if (input >= 1 && input <= 4)
+        if (input == "1" || input == "2" || input == "3" || input == "4"
+            || input == "chicken" || input == "cow" || input == "sheep" || input == "crocodile")
         {
             while (true)
             {
                 cout << "And how many?" << '\n';
                 cin >> amount;
+                cin.ignore();
+
+                // for when the user enters something other than int
+                if (cin.fail()) {
+                    cin.clear(); // Clear the fail state
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
+                    cout << "Invalid Input" << '\n';
+                    continue;
+                }
+
                 if (amount <= 0)
                 {
                     cout << "Invalid amount: " << amount << '\n';
@@ -255,44 +264,46 @@ void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player
             }
         }
 
-
-        if (bIsMarketCrash && input != 5)
+        if (bIsMarketCrash && (input != "5" || input != "return"))
         {
             cout << "nuh uh" << '\n';
             continue;
         }
 
-        switch (input)
+        if (input == "1" || input == "chicken")
         {
-        case 1:
             player->PurchaseAnimal(AnimalTypes::Chicken, amount, renderEngine, todaysPrices);
-            break;
-        case 2:
+        }
+        else if (input == "2" || input == "cow")
+        {
             player->PurchaseAnimal(AnimalTypes::Cow, amount, renderEngine, todaysPrices);
-            break;
-        case 3:
+        }
+        else if (input == "3" || input == "sheep")
+        {
             player->PurchaseAnimal(AnimalTypes::Sheep, amount, renderEngine, todaysPrices);
-            break;
-        case 4:
+        }
+        else if (input == "4" || input == "crocodile")
+        {
             player->PurchaseAnimal(AnimalTypes::Crocodile, amount, renderEngine, todaysPrices);
-            break;
-        case 5:
+        }
+        else if (input == "5" || input == "return")
+        {
             return;
-            break;
-        default:
+        }
+        else
+        {
             cout << "Invalid Input" << '\n';
-            break;
         }
     }
 }
 
 
-void WorldSystem::GenerateRandomEvent(Farmer* player, Prices* todaysPrices)
+void WorldSystem::GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices)
 {
-    system("CLS");
+    renderEngine->ClearConsole();
     cout << "A random event has occured!!!" << '\n';
 
-    RandomEvents randomEvent = static_cast<RandomEvents>(random(0, 8));
+    RandomEvents randomEvent = static_cast<RandomEvents>(random(0, 7));
 
     // Created for when in use in the switch
     // as I cannot create them inside

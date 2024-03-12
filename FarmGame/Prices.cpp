@@ -78,7 +78,7 @@ void Prices::LoadData(std::ifstream& saveFile)
 // Every day the price changes around the base price
 void Prices::DailyPriceChange()
 {
-	this->inflationRate	 = NegativeProtection(this->baseInflationRate + random(-0.2, 1.20));
+	this->inflationRate	 = NegativeProtection(this->baseInflationRate + random(-0.2, 0.20));
 
 	this->eggsPrice		 = NegativeProtection(this->baseEggsPrice      + random(-2.00, 2.00));
 	this->milkLiterPrice = NegativeProtection(this->baseMilkLiterPrice + random(-2.00, 2.00));
@@ -104,7 +104,7 @@ double Prices::NegativeProtection(double priceToCheck)
 // Every week the base price changes 
 void Prices::WeeklyPriceChange()
 {
-	this->baseInflationRate  = NegativeProtection(this->baseInflationRate + random(-0.2, 1.20));
+	this->baseInflationRate  = NegativeProtection(this->baseInflationRate + random(-0.2, 0.20));
 
 	this->baseEggsPrice		 = NegativeProtection(this->baseEggsPrice	   + random(-2.00, 2.00));
 	this->baseMilkLiterPrice = NegativeProtection(this->baseMilkLiterPrice + random(-2.00, 2.00));
@@ -121,11 +121,6 @@ void Prices::WeeklyPriceChange()
 void Prices::RandomEventHyperinflation()
 {
 	this->inflationRate  *= 10;
-						   	  
-	this->eggsPrice      *= 10;
-	this->milkLiterPrice *= 10;
-	this->woolPrice      *= 10;
-	this->crocSkinPrice  *= 10;
 							  
 	this->chickenPrice   *= 10;
 	this->cowPrice       *= 10;

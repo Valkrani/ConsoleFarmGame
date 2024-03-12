@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animal.cpp" />
+    <ClCompile Include="StringToLower.cpp" />
     <ClCompile Include="WorldSystem.cpp" />
     <ClCompile Include="Farmer.cpp" />
     <ClCompile Include="FarmGame.cpp" />
@@ -138,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animal.h" />
+    <ClInclude Include="StringToLower.h" />
     <ClInclude Include="WorldSystem.h" />
     <ClInclude Include="EnumTypes.h" />
     <ClInclude Include="Farmer.h" />

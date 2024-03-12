@@ -36,6 +36,9 @@
     <ClCompile Include="Prices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StringToLower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderEngine.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Prices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringToLower.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

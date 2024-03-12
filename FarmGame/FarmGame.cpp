@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "Farmer.h"
 #include "RenderEngine.h"
@@ -35,6 +36,7 @@ int main()
             break;
         }
         worldSystem->FinishDay(renderEngine, player, todaysPrices);
+        saveGameSystem->SaveGame(player, worldSystem, todaysPrices);
     }
 
     // future idea:

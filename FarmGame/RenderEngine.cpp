@@ -6,19 +6,38 @@
 #include <vector>
 #include "Prices.h"
 
+#include "StringToLower.h"
+
 using namespace std;
 
 RenderingEngine::RenderingEngine() {}
 
+void RenderingEngine::ClearConsole() const
+{
+	COORD topLeft = { 0, 0 };
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO screen;
+	DWORD written;
+
+	GetConsoleScreenBufferInfo(console, &screen);
+	FillConsoleOutputCharacterA(
+		console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written
+	);
+	FillConsoleOutputAttribute(
+		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
+		screen.dwSize.X * screen.dwSize.Y, topLeft, &written
+	);
+	SetConsoleCursorPosition(console, topLeft);
+}
+
 void RenderingEngine::StartupScreen(bool& outLoadingSave) const
 {
-	system("CLS");
+	ClearConsole();
 	cout << "*------------------------------------*" << '\n';
 	cout << "|                                    |" << '\n';
 	cout << "|      * Welcome to FarmGame *       |" << '\n';    // WIP title (hopefully)
 	cout << "|                                    |" << '\n';
 	cout << "*------------------------------------*" << '\n';
-	cout << "WARNING: There is no autosave, make sure to quit using the Quit option at the start of each day!!!" << '\n';
 	cout << '\n';
 
 	cout << "New Game / Load Game   (new/load)" << '\n';
@@ -26,21 +45,23 @@ void RenderingEngine::StartupScreen(bool& outLoadingSave) const
 	while (true)
 	{
 		string input;
-		cin >> input;
+		getline(cin, input);
 
-		if (input == "new")
+		StringToLower(input);
+		
+		if (input == "new" || input == "new game")
 		{
 			cout << "Starting new game..." << '\n';
 			Sleep(2000);
-			system("CLS");
+			ClearConsole();
 			outLoadingSave = false;
 			return;
 		}
-		else if (input == "load")
+		else if (input == "load" || input == "load game")
 		{
 			cout << "Loading game..." << '\n';
 			Sleep(2000);
-			system("CLS");
+			ClearConsole();
 			outLoadingSave = true;
 			return;
 		}
@@ -75,21 +96,21 @@ void RenderingEngine::FailedSellMessage(string sellType, int amount, int product
 
 void RenderingEngine::DisplayDailyOptions(int currentDay, Farmer* player) const
 {
-	system("CLS");
+	ClearConsole();
 	cout << "Today is day: " << currentDay << "." << '\n';
 	cout << "Current farm stats:" << '\n';
 	player->PrintFarmInfo();
 	cout << '\n';
 	cout << "What would you like to do today:" << '\n';
 	cout << "1. Sell Products" << '\n';
-	cout << "2. Buy Animal(s)" << '\n';
+	cout << "2. Buy Animals" << '\n';
 	cout << "3. Sleep" << '\n';
 	cout << "4. Save and Quit" << '\n';
 }
 
 void RenderingEngine::SellProductScreen(Farmer* player, Prices* todaysPrices) const
 {
-	system("CLS");
+	ClearConsole();
 	cout << "Today's prices are: " << '\n';
 	cout << "Eggs: " << todaysPrices->GetEggsPrice() << '\n';
 	cout << "Milk per liter: " << todaysPrices->GetMilkPrice() << '\n';
@@ -108,7 +129,7 @@ void RenderingEngine::SellProductScreen(Farmer* player, Prices* todaysPrices) co
 }
 void RenderingEngine::BuyAnimalsScreen(Farmer* player, Prices* todaysPrices) const
 {
-	system("CLS");
+	ClearConsole();
 	cout << "Your moneys: " << player->GetMoneyAmount() << "." << '\n';
 	cout << "What would you like to buy:" << '\n';
 	cout << "1. Chicken: " << todaysPrices->GetChickenPrice() << " per chicken." << '\n';
@@ -120,10 +141,10 @@ void RenderingEngine::BuyAnimalsScreen(Farmer* player, Prices* todaysPrices) con
 
 void RenderingEngine::DayEndScreen() const
 {
-	system("CLS");
-	for (int i = 0; i < 2; i++)
+	ClearConsole();
+	for (int i = 0; i < 1; i++)
 	{
-		system("CLS");
+		ClearConsole();
 		cout << "Sleeping";
 		for (int i = 0; i < 3; i++)
 		{

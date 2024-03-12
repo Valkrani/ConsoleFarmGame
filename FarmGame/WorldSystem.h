@@ -39,5 +39,5 @@ public:
 	void SellScreen(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices) const;
 
 	// Creates a random event from a number of options
-	void GenerateRandomEvent(Farmer* player, Prices* todaysPrices);
+	void GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices);
 };

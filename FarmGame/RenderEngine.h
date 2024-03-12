@@ -17,6 +17,8 @@ public:
 	// Returns true if the user is loading a save and false if hes starting a new game
 	void StartupScreen(bool& outLoadingSave) const;
 
+	void ClearConsole() const;
+
 	void SuccessfulPurchaseMessage(std::string purchaseType, int amount, Farmer* player) const;
 	void SuccessfulSellMessage(std::string purchaseType, int amount, Farmer* player) const;
 
