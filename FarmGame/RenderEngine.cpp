@@ -97,8 +97,7 @@ void RenderingEngine::FailedSellMessage(string sellType, int amount, int product
 void RenderingEngine::DisplayDailyOptions(int currentDay, Farmer* player) const
 {
 	ClearConsole();
-	cout << "Today is day: " << currentDay << "." << '\n';
-	cout << "Current farm stats:" << '\n';
+	cout << "Today is day: " << currentDay << '\n';
 	player->PrintFarmInfo();
 	cout << '\n';
 	cout << "What would you like to do today:" << '\n';
@@ -130,13 +129,13 @@ void RenderingEngine::SellProductScreen(Farmer* player, Prices* todaysPrices) co
 void RenderingEngine::BuyAnimalsScreen(Farmer* player, Prices* todaysPrices) const
 {
 	ClearConsole();
-	cout << "Your moneys: " << player->GetMoneyAmount() << "." << '\n';
+	cout << "Your moneys: " << player->GetMoneyAmount()<< '\n';
 	cout << "What would you like to buy:" << '\n';
-	cout << "1. Chicken: " << todaysPrices->GetChickenPrice() << " per chicken." << '\n';
-	cout << "2. Cow: " << todaysPrices->GetCowPrice() << " per cow." << '\n';
-	cout << "3. Sheep: " << todaysPrices->GetSheepPrice() << " per sheep." << '\n';
-	cout << "4. Crocodile: " << todaysPrices->GetCrocodilePrice() << " per crocodile." << '\n';
-	cout << "5. Return." << '\n';
+	cout << "1. Chicken: " << todaysPrices->GetChickenPrice() << " per chicken" << '\n';
+	cout << "2. Cow: " << todaysPrices->GetCowPrice() << " per cow" << '\n';
+	cout << "3. Sheep: " << todaysPrices->GetSheepPrice() << " per sheep" << '\n';
+	cout << "4. Crocodile: " << todaysPrices->GetCrocodilePrice() << " per crocodile" << '\n';
+	cout << "5. Return" << '\n';
 }
 
 void RenderingEngine::DayEndScreen() const

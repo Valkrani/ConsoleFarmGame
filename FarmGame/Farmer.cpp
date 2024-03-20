@@ -188,11 +188,23 @@ void Farmer::SellProduct(Product productType, int productAmount, RenderingEngine
 
 void Farmer::PrintFarmInfo() const
 {
+	cout << "Current animals:" << '\n';
 	for (Animal* animal : this->animals)
 	{
-		cout << animal->GetAnimalAmount() << " " << animal->GetAnimalTypeToString() << " have made: " << animal->GetProductAmount() << " " << animal->GetProductTypeToString() << "." << '\n';
+		cout << animal->GetAnimalAmount() << " - " << animal->GetAnimalTypeToString() << '\n';
 	}
-	cout << "Your moneys: " << this->money << "." << '\n';
+
+	cout << '\n';
+	cout << "Current products:" << '\n';
+
+	for (Animal* animal : this->animals)
+	{
+		cout << animal->GetProductAmount() << " - " << animal->GetProductTypeToString() << '\n';
+	}
+
+	cout << '\n';
+
+	cout << "Your moneys: " << this->money << '\n';
 }
 
 
