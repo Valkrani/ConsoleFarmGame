@@ -2,6 +2,9 @@
 #include "EnumTypes.h"
 #include "StringToLower.h"
 
+#include "RenderEngine.h"
+#include "Farmer.h"
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -26,8 +29,8 @@ double random(double range_from, double range_to) {
 }
 
 
-
 using namespace std;
+
 WorldSystem::WorldSystem() 
 {
     days = 1;
@@ -41,10 +44,10 @@ void WorldSystem::ProccessDay(RenderingEngine* renderEngine, Farmer* player, Pri
 {
     if (days != 1)
     {
-        todaysPrices->DailyPriceChange();
+        todaysPrices->DailyPriceChange(player);
         if (random(0.0, 1.0) <= chanceForRandomEvent)
         {
-            GenerateRandomEvent(renderEngine, player, todaysPrices);
+            GenerateRandomEvent(renderEngine, player);
             chanceForRandomEvent = basechanceForRandomEvent;
         }
         else
@@ -66,11 +69,11 @@ void WorldSystem::ProccessDay(RenderingEngine* renderEngine, Farmer* player, Pri
 
         if (input == "1" || input == "sell products")
         {
-            this->SellScreen(renderEngine, player, todaysPrices);
+            this->SellScreen(renderEngine, player);
         }
         else if (input == "2" || input == "buy animals")
         {
-            this->PurchaseScreen(renderEngine, player, todaysPrices);
+            this->PurchaseScreen(renderEngine, player);
         }
         else if (input == "3" || input == "sleep")
         {
@@ -108,10 +111,10 @@ void WorldSystem::FinishDay(RenderingEngine* renderEngine, Farmer* player, Price
     // Check if the week has ended
     if (days % 7 == 0)
     {
-        todaysPrices->WeeklyPriceChange();
+        todaysPrices->WeeklyPriceChange(player);
         basechanceForRandomEvent += 0.05;
     }
-    todaysPrices->DailyPriceChange();
+    todaysPrices->DailyPriceChange(player);
 
     days++;
 
@@ -123,7 +126,7 @@ void WorldSystem::FinishDay(RenderingEngine* renderEngine, Farmer* player, Price
 }
 
 
-void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices) const
+void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player) const
 {
     if (bIsMarketCrash)
     {
@@ -145,7 +148,7 @@ void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Pric
 
 
     renderEngine->ClearConsole();
-    renderEngine->SellProductScreen(player, todaysPrices);
+    renderEngine->SellProductScreen(player);
 
     while (true)
     {
@@ -155,7 +158,7 @@ void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Pric
         StringToLower(input);
 
         if (input == "1" || input == "2" || input == "3" || input == "4"
-            || (input == "eggs") || input == "milk liters" || input == "wool" || input == "crocodile skins")
+            || (input == "eggs") || input == "milk liters" || input == "wool" || input == "crocodile skin pieces")
         {
             while (true)
             {
@@ -182,19 +185,19 @@ void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Pric
 
         if (input == "1" || input == "eggs")
         {
-            player->SellProduct(Product::Eggs, amount, renderEngine, todaysPrices);
+            player->SellProduct("Eggs", amount, renderEngine);
         }
         else if (input == "2" || input == "milk liters")
         {
-            player->SellProduct(Product::Milk, amount, renderEngine, todaysPrices);
+            player->SellProduct("Milk", amount, renderEngine);
         }
         else if (input == "3" || input == "wool")
         {
-            player->SellProduct(Product::Wool, amount, renderEngine, todaysPrices);
+            player->SellProduct("Wool", amount, renderEngine);
         }
         else if (input == "4" || input == "crocodile skins")
         {
-            player->SellProduct(Product::CrocSkin, amount, renderEngine, todaysPrices);
+            player->SellProduct("Crocodile Skin", amount, renderEngine);
         }
         else if (input == "5" || input == "return")
         {
@@ -207,7 +210,7 @@ void WorldSystem::SellScreen(RenderingEngine* renderEngine, Farmer* player, Pric
     }
 }
 
-void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player, Prices * todaysPrices) const
+void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player) const
 {
     if (bIsMarketCrash)
     {
@@ -229,7 +232,7 @@ void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player
     }
 
     renderEngine->ClearConsole();
-    renderEngine->BuyAnimalsScreen(player, todaysPrices);
+    renderEngine->BuyAnimalsScreen(player);
     while (true)
     {
         string input;
@@ -271,19 +274,19 @@ void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player
 
         if (input == "1" || input == "chicken")
         {
-            player->PurchaseAnimal(AnimalTypes::Chicken, amount, renderEngine, todaysPrices);
+            player->PurchaseAnimal("Chicken", amount, renderEngine);
         }
         else if (input == "2" || input == "cow")
         {
-            player->PurchaseAnimal(AnimalTypes::Cow, amount, renderEngine, todaysPrices);
+            player->PurchaseAnimal("Cow", amount, renderEngine);
         }
         else if (input == "3" || input == "sheep")
         {
-            player->PurchaseAnimal(AnimalTypes::Sheep, amount, renderEngine, todaysPrices);
+            player->PurchaseAnimal("Sheep", amount, renderEngine);
         }
         else if (input == "4" || input == "crocodile")
         {
-            player->PurchaseAnimal(AnimalTypes::Crocodile, amount, renderEngine, todaysPrices);
+            player->PurchaseAnimal("Crocodile", amount, renderEngine);
         }
         else if (input == "5" || input == "return")
         {
@@ -297,17 +300,39 @@ void WorldSystem::PurchaseScreen(RenderingEngine * renderEngine, Farmer * player
 }
 
 
-void WorldSystem::GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices)
+void WorldSystem::GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* player)
 {
     renderEngine->ClearConsole();
     cout << "A random event has occured!!!" << '\n';
 
     RandomEvents randomEvent = static_cast<RandomEvents>(random(0, 7));
 
-    // Created for when in use in the switch
-    // as I cannot create them inside
-    Product requestProduct;
-    AnimalTypes randomAnimalType;
+    
+    string requestProduct;
+    string randomAnimalType;
+
+    switch (random(1, 4))
+    {
+    case 1:
+        requestProduct = "Eggs";
+        randomAnimalType = "Chicken";
+        break;
+
+    case 2:
+        requestProduct = "Milk liters";
+        randomAnimalType = "Cow";
+        break;
+
+    case 3:
+        requestProduct = "Wool";
+        randomAnimalType = "Sheep";
+        break;
+
+    case 4:
+        requestProduct = "Crocodile skin pieces";
+        randomAnimalType = "Crocodile";
+        break;
+    }
 
     switch (randomEvent)
     {
@@ -324,7 +349,7 @@ void WorldSystem::GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* pla
     case RandomEvents::Hyperinflation:
         cout << "Hyperinflation has occured!" << '\n';
         cout << "All prices have gone up 1000%" << '\n';
-        todaysPrices->RandomEventHyperinflation();
+        player->RandomEventHyperinflation();
         break;
 
     case RandomEvents::Plague:
@@ -333,19 +358,17 @@ void WorldSystem::GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* pla
         break;
 
     case RandomEvents::NPCrequest:
-        requestProduct = static_cast<Product>(random(0, 3));
-        player->RandomEventNPCrequest(requestProduct, random(1, 10), random(0.95, 1.05), todaysPrices);
+        player->RandomEventNPCrequest(requestProduct, random(1, 10), random(0.95, 1.05));
         break;
 
     case RandomEvents::AnimalCapture:
-        randomAnimalType = static_cast<AnimalTypes>(random(0, 3));
         player->RandomEventAnimalCapture(randomAnimalType, random(0.0, 1.0));
         break;
 
     case RandomEvents::MarketCrash:
         cout << "A Market Crash has occured!" << '\n';
         cout << "Be adviced to NOT use the market this day!!" << '\n';
-        todaysPrices->RandomEventMarketCrash();
+        player->RandomEventMarketCrash();
         bIsMarketCrash = true;
         break;
 

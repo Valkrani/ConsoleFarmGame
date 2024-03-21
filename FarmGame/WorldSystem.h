@@ -33,11 +33,11 @@ public:
 	void FinishDay(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices);
 
 	// Handles the user input for purchasing an animal
-	void PurchaseScreen(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices) const;
+	void PurchaseScreen(RenderingEngine* renderEngine, Farmer* player) const;
 
 	// Handles the user input for selling products
-	void SellScreen(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices) const;
+	void SellScreen(RenderingEngine* renderEngine, Farmer* player) const;
 
 	// Creates a random event from a number of options
-	void GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* player, Prices* todaysPrices);
+	void GenerateRandomEvent(RenderingEngine* renderEngine, Farmer* player);
 };

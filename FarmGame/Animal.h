@@ -1,43 +1,80 @@
 #pragma once
 
-#include "EnumTypes.h"
+#include "Product.h"
 #include <string>
 
 class Animal
 {
-	AnimalTypes animalType;
-	int productAmount;
-	int animalCount;
+	int count;
+
+	double currentPrice;
+	double basePrice;
+
 	int produceDays;
 
 public:
-	Animal(AnimalTypes _animalType, int _produceDays);
+	Animal(int _produceDays, double _price);
+
+	void FinishDay(int day, Product* product) const;
 
 	// Saves all the data related to the animal
 	void SaveData(std::ofstream& outSaveFile) const;
 	// Loads all the data related to the animal
 	void LoadData(std::ifstream& saveFile);
 
-	// Returns the animal type using AnimalTypes
-	AnimalTypes GetAnimalType() const { return animalType; }
+	int GetAnimalAmount() const { return count; }
+	double GetPrice() const { return currentPrice; }
+	double GetBasePrice() const { return basePrice; }
 
-	// Returns the animal type in string
-	std::string GetAnimalTypeToString() const;
-	// Returns the product type in string using AnimalType
-	std::string GetProductTypeToString() const;
+	void SetPrice(double newPrice) { currentPrice = newPrice; }
 
-	// Returns the amount of products the animal currently has
-	int GetProductAmount() const { return productAmount; }
+	void UpdateDailyPrice(double newPrice);
+	void UpdateWeeklyPrice(double newPrice);
 
-	// Returns the amount of animals
-	int GetAnimalAmount() const { return animalCount; }
+	virtual bool IsType(std::string compare) const { return "Animal" == compare; }
 
-	void FinishDay(int day);
+	virtual std::string GetType(bool checkSingle = true) const { return "Animal"; }
 
 	void AddAnimal(int amountToAdd);
 	void RemoveAnimal(int amountToTake);
-
-	void RemoveProducts(int amountToRemove);
-
 };
 
+class Chicken : public Animal
+{
+public:
+	Chicken(int _produceDays, double _price) : Animal(_produceDays, _price) {}
+
+	bool IsType(std::string compare) const override { return "Chicken" == compare; }
+
+	std::string GetType(bool checkSingle) const override;
+};
+
+class Cow : public Animal
+{
+public:
+	Cow(int _produceDays, double _price) : Animal(_produceDays, _price) {}
+
+	bool IsType(std::string compare) const override { return "Cow" == compare; }
+
+	std::string GetType(bool checkSingle) const override;
+};
+
+class Sheep : public Animal
+{
+public:
+	Sheep(int _produceDays, double _price) : Animal(_produceDays, _price) {}
+
+	bool IsType(std::string compare) const override { return "Sheep" == compare; }
+
+	std::string GetType(bool checkSingle) const override { return "Sheep"; }
+};
+
+class Crocodile : public Animal
+{
+public:
+	Crocodile(int _produceDays, double _price) : Animal(_produceDays, _price) {}
+
+	bool IsType(std::string compare) const override { return "Crocodile" == compare; }
+
+	std::string GetType(bool checkSingle) const override;
+};

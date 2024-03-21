@@ -107,34 +107,30 @@ void RenderingEngine::DisplayDailyOptions(int currentDay, Farmer* player) const
 	cout << "4. Save and Quit" << '\n';
 }
 
-void RenderingEngine::SellProductScreen(Farmer* player, Prices* todaysPrices) const
+void RenderingEngine::SellProductScreen(Farmer* player) const
 {
+	std::vector<std::pair<double, double>> currentPrices = player->GetCurrentPrices();
 	ClearConsole();
 	cout << "Today's prices are: " << '\n';
-	cout << "Eggs: " << todaysPrices->GetEggsPrice() << '\n';
-	cout << "Milk per liter: " << todaysPrices->GetMilkPrice() << '\n';
-	cout << "Wool: " << todaysPrices->GetWoolPrice() << '\n';
-	cout << "Crocodile Skin: " << todaysPrices->GetCrocSkinPrice() << '\n';
+	cout << "Eggs: " << currentPrices[0].second << '\n';
+	cout << "Milk per liter: " << currentPrices[1].second << '\n';
+	cout << "Wool: " << currentPrices[2].second << '\n';
+	cout << "Crocodile Skin: " << currentPrices[3].second << '\n';
 	cout << '\n';
 	cout << "What would you like to sell: " << '\n';
 
-	vector<Animal*> animals = player->GetProductsInfo();
-	for (int i = 0; i < animals.size(); i++)
-	{
-		cout << i + 1 << ". Amount of " << animals[i]->GetProductTypeToString() << ": " << animals[i]->GetProductAmount() << '\n';
-	}
-	
-	cout << animals.size() + 1 <<". Return." << '\n';
+	player->PrintProducts();
 }
-void RenderingEngine::BuyAnimalsScreen(Farmer* player, Prices* todaysPrices) const
+void RenderingEngine::BuyAnimalsScreen(Farmer* player) const
 {
+	std::vector<std::pair<double, double>> currentPrices = player->GetCurrentPrices();
 	ClearConsole();
 	cout << "Your moneys: " << player->GetMoneyAmount()<< '\n';
 	cout << "What would you like to buy:" << '\n';
-	cout << "1. Chicken: " << todaysPrices->GetChickenPrice() << " per chicken" << '\n';
-	cout << "2. Cow: " << todaysPrices->GetCowPrice() << " per cow" << '\n';
-	cout << "3. Sheep: " << todaysPrices->GetSheepPrice() << " per sheep" << '\n';
-	cout << "4. Crocodile: " << todaysPrices->GetCrocodilePrice() << " per crocodile" << '\n';
+	cout << "1. Chicken: " << currentPrices[0].first << " per chicken" << '\n';
+	cout << "2. Cow: " << currentPrices[1].first << " per cow" << '\n';
+	cout << "3. Sheep: " << currentPrices[2].first << " per sheep" << '\n';
+	cout << "4. Crocodile: " << currentPrices[3].first << " per crocodile" << '\n';
 	cout << "5. Return" << '\n';
 }
 

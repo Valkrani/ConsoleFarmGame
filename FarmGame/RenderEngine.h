@@ -26,7 +26,7 @@ public:
 	void FailedSellMessage(std::string sellType, int amount, int productAmount, std::string productType) const;
 
 	void DisplayDailyOptions(int currentDay, Farmer* player) const;
-	void SellProductScreen(Farmer* player, Prices* todaysPrices) const;
-	void BuyAnimalsScreen(Farmer* player, Prices* todaysPrices) const;
+	void SellProductScreen(Farmer* player) const;
+	void BuyAnimalsScreen(Farmer* player) const;
 	void DayEndScreen() const;
 };

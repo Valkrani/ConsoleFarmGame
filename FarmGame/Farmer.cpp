@@ -8,50 +8,54 @@
 using namespace std;
 Farmer::Farmer()
 {
-	this->animals.push_back(new Animal(AnimalTypes::Chicken, ChickenProduceDays));
-	this->animals[0]->AddAnimal(1);
-	this->animals.push_back(new Animal(AnimalTypes::Cow, CowProduceDays));
-	this->animals.push_back(new Animal(AnimalTypes::Sheep, SheepProduceDays));
-	this->animals.push_back(new Animal(AnimalTypes::Crocodile, CrocodileProduceDays));
-	this->money = 0;
+	inventory.push_back(make_pair(new Chicken(1, 12.50), new Eggs(4.40)));
+	inventory[0].first->AddAnimal(1);
+	inventory.push_back(make_pair(new Cow(3, 23.30), new Milk(7.50)));
+	inventory.push_back(make_pair(new Sheep(3, 56.70), new Wool(13.23)));
+	inventory.push_back(make_pair(new Crocodile(5, 120.70), new CrocodileSkin(34.60)));
+
+	money = 0;
+}
+
+Farmer::~Farmer()
+{
+	for (int i = 0; i < inventory.size(); i++)
+	{
+		delete inventory[i].first;
+		delete inventory[i].second;
+	}
 }
 
 void Farmer::SaveData(ofstream& outSaveFile) const
 {
 	outSaveFile << money << '\n';
-	for (Animal* animal : animals)
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-		animal->SaveData(outSaveFile);
+		curPair.first->SaveData(outSaveFile);
+		curPair.second->SaveData(outSaveFile);
 	}
 }
 
 void Farmer::LoadData(ifstream& saveFile)
 {
 	saveFile >> money;
-	for (Animal* animal : animals)
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-		animal->LoadData(saveFile);
+		curPair.first->LoadData(saveFile);
+		curPair.second->LoadData(saveFile);
 	}
 }
 
 void Farmer::FinishDay(int day)
 {
-	for (Animal* animal : animals)
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-		animal->FinishDay(day);
+		curPair.first->FinishDay(day, curPair.second);
 	}
 }
 
 
-Farmer::~Farmer()
-{
-	for (int i = 0; i < animals.size(); i++)
-	{
-		delete animals[i];
-	}
-}
-
-void Farmer::PurchaseAnimal(AnimalTypes animalToPurchase, int animalsAmount, RenderingEngine* renderEngine, Prices* currentPrices)
+void Farmer::PurchaseAnimal(std::string animalToPurchase, int animalsAmount, RenderingEngine* renderEngine)
 {
 
 	//  By default its false, but changes to true when the player has enough money to purchase the desired animal
@@ -60,151 +64,139 @@ void Farmer::PurchaseAnimal(AnimalTypes animalToPurchase, int animalsAmount, Ren
 	// Stores the amount of money needed incase the player doesn't have enough
 	double moneyNeeded = 0;
 
-	switch (animalToPurchase)
+	// Iterate through the inventory and check if it has found the querie
+	// Calculate the sum needed and check if the user has enough
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-	case AnimalTypes::Chicken:
-		if (this->money >= currentPrices->GetChickenPrice() * animalsAmount)
+		if (curPair.first->IsType(animalToPurchase))
 		{
-			this->money -= currentPrices->GetChickenPrice() * animalsAmount;
-			bSuccessfulPurchase = true;
-		}
-		else
-		{
-			moneyNeeded = currentPrices->GetChickenPrice() * animalsAmount - this->money;
-		}
-		break;
-
-	case AnimalTypes::Cow:
-		if (this->money >= currentPrices->GetCowPrice() * animalsAmount)
-		{
-			this->money -= currentPrices->GetCowPrice() * animalsAmount;
-			bSuccessfulPurchase = true;
-		}
-		else
-		{
-			moneyNeeded = currentPrices->GetCowPrice() * animalsAmount - this->money;
-		}
-		break;
-
-	case AnimalTypes::Sheep:
-		if (this->money >= currentPrices->GetSheepPrice() * animalsAmount)
-		{
-			this->money -= currentPrices->GetSheepPrice() * animalsAmount;
-			bSuccessfulPurchase = true;
-		}
-		else
-		{
-			moneyNeeded = currentPrices->GetSheepPrice() * animalsAmount - this->money;
-		}
-		break;
-
-	case AnimalTypes::Crocodile:
-		if (this->money >= currentPrices->GetCrocodilePrice() * animalsAmount)
-		{
-			this->money -= currentPrices->GetCrocodilePrice() * animalsAmount;
-			bSuccessfulPurchase = true;
-		}
-		else
-		{
-			moneyNeeded = currentPrices->GetCrocodilePrice() * animalsAmount - this->money;
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	// Loop to find the desired animal and check if the player had enough money to purchase
-	// then output with the correct answer
-	for (Animal* animal : this->animals)
-	{
-		if (animal->GetAnimalType() == animalToPurchase)
-		{
-			if (bSuccessfulPurchase)
+			double neededSum = curPair.first->GetPrice() * animalsAmount;
+			if (money >= neededSum)
 			{
-				animal->AddAnimal(animalsAmount);
-				renderEngine->SuccessfulPurchaseMessage(animal->GetAnimalTypeToString(), animalsAmount, this);
-				break;
+				money -= neededSum;
+				curPair.first->AddAnimal(animalsAmount);
+				renderEngine->SuccessfulPurchaseMessage(curPair.first->GetType(false), animalsAmount, this);
 			}
 			else
 			{
-				renderEngine->FailedPurchaseMessage(animal->GetAnimalTypeToString(), animalsAmount, moneyNeeded);
+				moneyNeeded = neededSum - money;
+				renderEngine->FailedPurchaseMessage(curPair.first->GetType(false), animalsAmount, moneyNeeded);
+			}
+
+			break;
+		}
+	}
+}
+
+void Farmer::SellProduct(std::string productType, int productAmount, RenderingEngine* renderEngine)
+{
+
+	// Iterate through the inventory and check if it has found the querie
+	// Check if the user has enough of the product in question
+	for (pair<Animal*, Product*> curPair : inventory)
+	{
+		if (curPair.second->IsType(productType))
+		{
+			if (curPair.second->GetProductAmount() >= productAmount)
+			{
+				curPair.second->RemoveProduct(productAmount);
+				money += curPair.second->GetPrice() * productAmount;
+				renderEngine->SuccessfulSellMessage(curPair.second->GetType(false), productAmount, this);
+				return;
+			}
+			else
+			{
+				renderEngine->FailedSellMessage(curPair.second->GetType(false), productAmount, curPair.second->GetProductAmount(), curPair.second->GetType());
+				return;
 			}
 		}
 	}
 }
 
-void Farmer::SellProduct(Product productType, int productAmount, RenderingEngine* renderEngine, Prices* currentPrices)
+void Farmer::UpdateDailyPrices(std::vector<pair<double, double>> newPrices) const
 {
-
-	string animalTypeString;
-
-	// First, loop to check if there are enough products to sell
-	// If there are, remove them and continue on to get the money and prepare the animal type string
-	// Else, early return with a failed message
-	for (Animal* animal : this->animals)
+	if (inventory.size() != newPrices.size())
 	{
-		// Because Product::Eggs is 0 and AnimalTypes::Chicken is 0, it works without any extra work
-		if (animal->GetAnimalType() == productType)
-		{
-			if (productAmount <= animal->GetProductAmount())
-			{
-				animal->RemoveProducts(productAmount);
-				animalTypeString = animal->GetAnimalTypeToString();
-				break;
-			}
-			else
-			{
-				renderEngine->FailedSellMessage(animal->GetAnimalTypeToString(), productAmount, animal->GetProductAmount(), animal->GetProductTypeToString());
-				return;
-			}
-		}
+		return;
 	}
 
-	switch (productType)
+	for (int i = 0; i < inventory.size(); i++)
 	{
-	case Product::Eggs:
-		money += currentPrices->GetEggsPrice() * productAmount;
-		break;
+		inventory[i].first->UpdateDailyPrice(newPrices[i].first);
+		inventory[i].second->UpdateDailyPrice(newPrices[i].second);
+	}
+}
 
-	case Product::Milk:
-		money += currentPrices->GetMilkPrice() * productAmount;
-		break;
-
-	case Product::Wool:
-		money += currentPrices->GetWoolPrice() * productAmount;
-		break;
-
-	case Product::CrocSkin:
-		money += currentPrices->GetCrocSkinPrice() * productAmount;
-		break;
-
-	default:
-		break;
+void Farmer::UpdateWeeklyPrices(std::vector<pair<double, double>> newPrices) const
+{
+	if (inventory.size() != newPrices.size())
+	{
+		return;
 	}
 
-	renderEngine->SuccessfulSellMessage(animalTypeString, productAmount, this);
+	for (int i = 0; i < inventory.size(); i++)
+	{
+		inventory[i].first->UpdateWeeklyPrice(newPrices[i].first);
+		inventory[i].second->UpdateWeeklyPrice(newPrices[i].second);
+	}
+}
+
+std::vector<std::pair<double, double>> Farmer::GetBasePrices() const
+{
+	std::vector<std::pair<double, double>> output;
+
+	for (pair<Animal*, Product*> curPair : inventory)
+	{
+		output.push_back(make_pair(curPair.first->GetBasePrice(), curPair.second->GetBasePrice()));
+	}
+
+	return output;
+}
+
+std::vector<std::pair<double, double>> Farmer::GetCurrentPrices() const
+{
+	std::vector<std::pair<double, double>> output;
+
+	for (pair<Animal*, Product*> curPair : inventory)
+	{
+		output.push_back(make_pair(curPair.first->GetPrice(), curPair.second->GetPrice()));
+	}
+
+	return output;
 }
 
 void Farmer::PrintFarmInfo() const
 {
 	cout << "Current animals:" << '\n';
-	for (Animal* animal : this->animals)
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-		cout << animal->GetAnimalAmount() << " - " << animal->GetAnimalTypeToString() << '\n';
+		cout << curPair.first->GetAnimalAmount() << " - " << curPair.first->GetType() << '\n';
 	}
 
 	cout << '\n';
 	cout << "Current products:" << '\n';
 
-	for (Animal* animal : this->animals)
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-		cout << animal->GetProductAmount() << " - " << animal->GetProductTypeToString() << '\n';
+		cout << curPair.second->GetProductAmount() << " - " << curPair.second->GetType() << '\n';
 	}
 
 	cout << '\n';
 
 	cout << "Your moneys: " << this->money << '\n';
+}
+
+void Farmer::PrintProducts() const
+{
+	int counter = 1;
+	for (pair<Animal*, Product*> curPair : inventory)
+	{
+		cout << counter << ". Amount of " << curPair.second->GetType() << " - " << curPair.second->GetProductAmount() << '\n';
+		counter++;
+	}
+
+	cout << counter << ". Return." << '\n';
+
 }
 
 
@@ -223,24 +215,24 @@ void Farmer::RandomEventStealMoney(double amountToTake)
 
 void Farmer::RandomEventWolfAttack(double percentToTake)
 {
-	for (Animal* animal : animals)
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-		if (animal->GetAnimalType() == AnimalTypes::Sheep)
+		if (curPair.first->IsType("Sheep"))
 		{
-			if (animal->GetAnimalAmount() == 0)
+			if (curPair.first->GetAnimalAmount() == 0)
 			{
 				cout << "Luckily you dont have any sheep." << '\n';
 				return;
 			}
 
-			int amountToRemove = floor(animal->GetAnimalAmount() * percentToTake);
+			int amountToRemove = floor(curPair.first->GetAnimalAmount() * percentToTake);
 			if (amountToRemove == 0)
 			{
 				cout << "Somehow none of the sheep got killed!" << '\n';
 				return;
 			}
 
-			animal->RemoveAnimal(amountToRemove);
+			curPair.first->RemoveAnimal(amountToRemove);
 			cout << "Your sheep have been attacked by wolves!!!" << '\n';
 			cout << "You have lost " << amountToRemove << " sheep" << '\n';
 		}
@@ -249,100 +241,74 @@ void Farmer::RandomEventWolfAttack(double percentToTake)
 
 void Farmer::RandomEventPlague(double percentToTake)
 {
-	for (Animal* animal : animals)
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-		if (animal->GetAnimalAmount() == 0)
+		if (curPair.first->GetAnimalAmount() == 0)
 		{
-			cout << "You dont have any " << animal->GetAnimalTypeToString() << "." << '\n';
+			cout << "You dont have any " << curPair.first->GetType(false) << "." << '\n';
 			continue;
 		}
-		int amountToRemove = floor(animal->GetAnimalAmount() * percentToTake);
+		int amountToRemove = floor(curPair.first->GetAnimalAmount() * percentToTake);
 		if (amountToRemove == 0)
 		{
-			cout << "None of the " << animal->GetAnimalTypeToString() << " have died." << '\n';
+			cout << "None of the " << curPair.first->GetType(false) << " have died." << '\n';
 			continue;
 		}
-		animal->RemoveAnimal(amountToRemove);
-		cout << amountToRemove << " " << animal->GetAnimalTypeToString() << " have died." << '\n';
+		curPair.first->RemoveAnimal(amountToRemove);
+		cout << amountToRemove << " " << curPair.first->GetType(false) << " have died." << '\n';
 	}
 }
 
-void Farmer::RandomEventNPCrequest(Product request, int amount, double requestPriceDiff, Prices* todaysPrices)
+void Farmer::RandomEventNPCrequest(std::string request, int amount, double requestPriceDiff)
 {
 	double requestPrice;
-	string productInString;
-	switch (request)
+
+	for (pair<Animal*, Product*> curPair : inventory)
 	{
-	case Product::Eggs:
-		requestPrice = (todaysPrices->GetEggsPrice() * requestPriceDiff) * amount;
-		productInString = "Egg(s)";
-		break;
-
-	case Product::Milk:		
-		requestPrice = (todaysPrices->GetMilkPrice() * requestPriceDiff) * amount;
-		productInString = "Milk liter(s)";
-		break;
-
-	case Product::Wool:
-		requestPrice = (todaysPrices->GetWoolPrice() * requestPriceDiff) * amount;
-		productInString = "Wool";
-		break;
-
-	case Product::CrocSkin:
-		requestPrice = (todaysPrices->GetCrocSkinPrice() * requestPriceDiff) * amount;
-		productInString = "Crocodile skin";
-		break;
-	default:
-		break;
-	}
-
-	cout << "A villager has appeared at your farm requesting " << amount << " " << productInString << "." << '\n';
-	cout << "They offer " << requestPrice << "." << '\n';
-	cout << "Do you accept their offer?" << '\n';
-
-	while (true)
-	{
-		string input;
-		cin >> input;
-
-		if (input == "yes")
+		if (curPair.second->IsType(request))
 		{
-			for (Animal* animal : this->animals)
+			requestPrice = (curPair.second->GetPrice() * requestPriceDiff) * amount;
+
+			cout << "A villager has appeared at your farm requesting " << amount << " " << curPair.second->GetType(false) << "." << '\n';
+			cout << "They offer " << requestPrice << "." << '\n';
+			cout << "Do you accept their offer?" << '\n';
+
+			while (true)
 			{
-				// Because Product::Eggs is 0 and AnimalTypes::Chicken is 0, it works without any extra work
-				if (animal->GetAnimalType() == request)
+				string input;
+				cin >> input;
+
+				if (input == "yes")
 				{
-					if (amount <= animal->GetProductAmount())
-					{
-						animal->RemoveProducts(amount);
-						break;
-					}
-					else
+					if (curPair.second->GetProductAmount() < amount)
 					{
 						cout << "You dont have enough product." << '\n';
 						return;
 					}
+
+					curPair.second->RemoveProduct(amount);
+					cout << "You have agreed to give them the requested product." << '\n';
+					money += requestPrice;
+					return;
+				}
+				else if (input == "no")
+				{
+					cout << "You have declined to give them the requested product." << '\n';
+					return;
+				}
+				else
+				{
+					cout << "Invalid input" << '\n';
+					continue;
 				}
 			}
-
-			cout << "You have agreed to give them the requested product." << '\n';
-			money += requestPrice;
-			return;
-		}
-		else if (input == "no")
-		{
-			cout << "You have declined to give them the requested product." << '\n';
-			return;
-		}
-		else
-		{
-			cout << "Invalid input" << '\n';
-			continue;
 		}
 	}
+
+	
 }
 
-void Farmer::RandomEventAnimalCapture(AnimalTypes animalType, double chancePercent)
+void Farmer::RandomEventAnimalCapture(std::string animalType, double chancePercent)
 {
 	cout << "A wild animal has appeared!" << '\n';
 	cout << "Will you try to catch it? (yes/no)" << '\n';
@@ -370,13 +336,13 @@ void Farmer::RandomEventAnimalCapture(AnimalTypes animalType, double chancePerce
 
 	if (chancePercent > 0.6)
 	{
-		for (Animal* animal : animals)
+		for (pair<Animal*, Product*> curPair : inventory)
 		{
-			if (animal->GetAnimalType() == animalType)
+			if (curPair.first->IsType(animalType))
 			{
-				animal->AddAnimal(1);
+				curPair.first->AddAnimal(1);
 
-				cout << "You have successfully caught a " << animal->GetAnimalTypeToString() << "!" << '\n';
+				cout << "You have successfully caught a " << curPair.first->GetType() << "!" << '\n';
 				cout << "Congrats!" << '\n';
 			}
 		}
@@ -401,4 +367,21 @@ void Farmer::RandomEventTornado(double damagePricePercentage, double percentMiss
 	cout << "A tornado has struct your farm and has caused " << moneyToTake << " money worth of damage!" << '\n';
 	cout << "The money has been automatically deducted from your account." << '\n';
 	RandomEventPlague(percentMissingAnimals);
+}
+
+void Farmer::RandomEventHyperinflation()
+{
+	for (pair<Animal*, Product*> curPair : inventory)
+	{
+		curPair.first->SetPrice(curPair.first->GetPrice() * 10);
+	}
+}
+
+void Farmer::RandomEventMarketCrash()
+{
+	for (pair<Animal*, Product*> curPair : inventory)
+	{
+		curPair.first->SetPrice(0.0);
+		curPair.second->SetPrice(0.0);
+	}
 }

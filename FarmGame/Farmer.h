@@ -4,20 +4,15 @@
 #include <vector>
 #include <string>
 #include "Animal.h"
+#include "Product.h"
 #include "Prices.h"
 
-
-const int ChickenProduceDays = 1;
-const int CowProduceDays = 3;
-const int SheepProduceDays = 3;
-const int CrocodileProduceDays = 5;
 
 class RenderingEngine;
 // The class the user will use
 class Farmer
 {
-	// Container of the animals with their type and how much products it has currently
-	std::vector<Animal*> animals;
+	std::vector<std::pair<Animal*, Product*>> inventory;
 
 	// The amount of money the player will have
 	double money;
@@ -37,14 +32,9 @@ public:
 	// Loops to call every animal's saveData function
 	void LoadData(std::ifstream& saveFile);
 
-	// Using AnimalTypes enum it looks for which type it is, removes the amount of money, and then finds the type in the container to add to the counter.
-	// RenderingEngine is used to inform the user if they have succeeded or not.
-	void PurchaseAnimal(AnimalTypes animalToPurchase, int animalsAmount, RenderingEngine* renderEngine, Prices* currentPrices);
 
-	// Using Product enum it looks for the corresponding price and adds the money, then looks for the AnimalTypes corresponding to the Product.
-	// Product enum has the same values as AnimaTypes so it works without any issues.
-	// RenderingEngine is used to inform the user if they have succeeded or not.
-	void SellProduct(Product productType, int productAmount, RenderingEngine* renderEngine, Prices* currentPrices);
+	void PurchaseAnimal(std::string animalToPurchase, int animalsAmount, RenderingEngine* renderEngine);
+	void SellProduct(std::string productType, int productAmount, RenderingEngine* renderEngine);
 
 	// Loops through all the animals and calls their corresponding FinishDay()
 	void FinishDay(int day);
@@ -53,15 +43,22 @@ public:
 	// Returns the amount of money the player has
 	double GetMoneyAmount() const { return money; }
 
-	std::vector<Animal*> GetProductsInfo() const { return animals; }
+	void UpdateDailyPrices(std::vector<std::pair<double, double>> newPrices) const;
+	void UpdateWeeklyPrices(std::vector<std::pair<double, double>> newPrices) const;
+	std::vector<std::pair<double, double>> GetBasePrices() const;
+	std::vector<std::pair<double, double>> GetCurrentPrices() const;
 
 	void PrintFarmInfo() const;
+	void PrintProducts() const;
 
 	void RandomEventStealMoney(double amountToTake);
 	void RandomEventWolfAttack(double percentToTake);
 	void RandomEventPlague(double percentToTake);
-	void RandomEventNPCrequest(Product request, int amount, double requestPriceDiff, Prices* todaysPrices);
-	void RandomEventAnimalCapture(AnimalTypes animalType, double chancePercent);
+	void RandomEventNPCrequest(std::string request, int amount, double requestPriceDiff);
+	void RandomEventAnimalCapture(std::string animalType, double chancePercent);
 	void RandomEventTornado(double damagePricePercentage, double percentMissingAnimals);
+
+	void RandomEventHyperinflation();
+	void RandomEventMarketCrash();
 
 };

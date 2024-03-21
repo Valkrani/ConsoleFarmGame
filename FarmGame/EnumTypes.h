@@ -1,25 +1,6 @@
 #pragma once
 
 
-// Enum for types of animals
-enum AnimalTypes
-{
-	Chicken = 0,
-	Cow = 1,
-	Sheep = 2,
-	Crocodile = 3
-};
-
-// Enum for types of products from animals
-enum Product
-{
-	Eggs = 0,
-	Milk = 1,
-	Wool = 2,
-	CrocSkin = 3
-};
-
-
 // Random events could be:
 	// 1. Robbery (steals a percentage of the player's money)
 	// 2. Wolf Attack (a percentage of the player's sheep die) (or maybe the welsh stole them)

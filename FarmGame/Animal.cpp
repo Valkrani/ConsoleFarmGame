@@ -1,107 +1,80 @@
 #include "Animal.h"
-#include <string>
+#include "Product.h"
 #include <fstream>
 
 using namespace std;
-Animal::Animal(AnimalTypes _animalType, int _produceDays) : animalType(_animalType), produceDays(_produceDays)
+Animal::Animal(int _produceDays, double _price) : produceDays(_produceDays), basePrice(_price), currentPrice(_price)
 {
-	this->productAmount = 0;
-	this->animalCount = 0;
+	count = 0;
 }
 
-void Animal::FinishDay(int day)
+void Animal::FinishDay(int day, Product* product) const
 {
 	if (day % produceDays == 0)
 	{
-		productAmount += 1 * animalCount;
+		product->AddProduct(count); // one product per animal
 	}
 }
 
 void Animal::SaveData(ofstream& outSaveFile) const
 {
-	outSaveFile << static_cast<int>(animalType) << " " << productAmount << " " << animalCount << " " << produceDays << '\n';
+	outSaveFile << count << " " << produceDays << " " << currentPrice << " " << basePrice << '\n';
 }
 
 void Animal::LoadData(ifstream& saveFile)
 {
-	int type;
-	saveFile >> type >> productAmount >> animalCount >> produceDays;
-	animalType = static_cast<AnimalTypes>(type);
+	saveFile >> count >> produceDays >> currentPrice >> basePrice;
 }
 
+void Animal::UpdateDailyPrice(double newPrice)
+{
+	currentPrice = newPrice;
+}
+
+void Animal::UpdateWeeklyPrice(double newPrice)
+{
+	basePrice = newPrice;
+}
 
 
 void Animal::AddAnimal(int amountToAdd)
 {
-	this->animalCount += amountToAdd;
+	count += amountToAdd;
 }
 
 void Animal::RemoveAnimal(int amountToTake)
 {
-	this->animalCount -= amountToTake;
+	count -= amountToTake;
 }
 
 
-void Animal::RemoveProducts(int amountToRemove)
+
+std::string Chicken::GetType(bool checkSingle) const
 {
-	if (this->productAmount < amountToRemove)
+	if (GetAnimalAmount() == 1 && checkSingle)
 	{
-		return;
+		return "Chicken";
 	}
 
-	this->productAmount -= amountToRemove;
+	return "Chickens";
 }
 
-string Animal::GetAnimalTypeToString() const
+std::string Cow::GetType(bool checkSingle) const
 {
-	switch (this->animalType)
+	if (GetAnimalAmount() == 1 && checkSingle)
 	{
-	case AnimalTypes::Chicken:
-		return "Chickens";
-		break;
-
-	case AnimalTypes::Cow:
-		return "Cows";
-		break;
-
-	case AnimalTypes::Sheep:
-		return "Sheep";
-
-		break;
-
-	case AnimalTypes::Crocodile:
-		return "Crocodiles";
-		break;
-	default:
-		break;
+		return "Cow";
 	}
 
-	return "error";
+	return "Cows";
 }
 
-std::string Animal::GetProductTypeToString() const
+std::string Crocodile::GetType(bool checkSingle) const
 {
-	switch (this->animalType)
+	if (GetAnimalAmount() == 1 && checkSingle)
 	{
-	case AnimalTypes::Chicken:
-		return "Eggs";
-		break;
-
-	case AnimalTypes::Cow:
-		return "Milk Liters";
-		break;
-
-	case AnimalTypes::Sheep:
-		return "Wool";
-		break;
-
-	case AnimalTypes::Crocodile:
-		return "Crocodile Skin";
-		break;
-
-	default:
-		break;
+		return "Crocodile";
 	}
 
-	return "error";
+	return "Crocodiles";
 }
